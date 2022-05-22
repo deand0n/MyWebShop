@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyWebShop.Domain.Base.Pagination;
 using MyWebShop.Domain.Models;
+using MyWebShop.DTOs.Request;
 using MyWebShop.Services;
 
 namespace MyWebShop.Controllers;
@@ -16,33 +17,10 @@ public class ProductsController : BaseApiController
     }
     
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] Product request)
+    public async Task<IActionResult> Add([FromBody] ProductDtoRequest request)
     {
-        // HttpContext.Request.Form.TryGetValue(TryGetValue)
         var product = await _productsService.AddAsync(request);
         return Ok(product);
-    }
-
-    [HttpPost("image")]
-    public async Task<IActionResult> Image(IFormFile file)
-    {
-        // using (var stream = new StreamWriter(image.OpenReadStream()))
-        // {
-        //     
-        //     // var imageUrl = await _productsService.AddImageAsync(image);
-        // }
-
-        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "");
-        // foreach (IFormFile file in files) {
-        if (file.Length > 0) {
-            var filePath = Path.Combine(uploads, file.FileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create)) {
-                await file.CopyToAsync(fileStream);
-            }
-        }
-        // }
-        
-        return Ok();
     }
 
     [HttpGet]

@@ -1,8 +1,10 @@
 using System.Linq.Expressions;
-using ImgurSharp;
+using AutoMapper;
 using MyWebShop.Domain.Base.Pagination;
 using MyWebShop.Domain.Interfaces;
 using MyWebShop.Domain.Models;
+using MyWebShop.DTOs.Request;
+using MyWebShop.DTOs.Response;
 
 namespace MyWebShop.Services;
 
@@ -11,36 +13,34 @@ public class ProductsService : BaseService
     private readonly IProductRepository _productRepository;
 
     public ProductsService(
-        IUnitOfWork unitOfWork) : base(unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper) : base(unitOfWork, mapper)
     {
         _productRepository = unitOfWork.ProductRepository;
     }
     
-    public async Task<Product> AddAsync(Product productRequest)
+    public async Task<ProductDtoResponse> AddAsync(ProductDtoRequest request)
     {
-        // Imgur imgur = new Imgur("dccd8529c8cd2ae");
-        // IFormFile
-        //
-        // var image = await imgur.UpdateImageAnonymous()
-
+        var images = Mapper.Map<List<ImageDtoRequest>, List<Image>>(request.Images);
 
         var product = new Product()
         {
-            Name = productRequest.Name,
-            Description = productRequest.Description,
-            Price = productRequest.Price,
-            Quantity = productRequest.Quantity,
-            Images = productRequest.Images,
-            Comments = productRequest.Comments,
+            Name = request.Name,
+            Description = request.Description,
+            Price = request.Price,
+            Quantity = request.Quantity,
+            Images = images ?? new List<Image>(),
         };
         
         await _productRepository.AddAsync(product);
         await UnitOfWork.SaveChangesAsync();
 
-        return product;
+        var response = Mapper.Map<Product, ProductDtoResponse>(product);
+
+        return response;
     }
 
-    public async Task<Page<Product>> GetPaginatedListAsync(Pageable request)
+    public async Task<Page<ProductDtoResponse>> GetPaginatedListAsync(Pageable request)
     {
         var searchQuery = request.SearchQuery.Trim().ToLower();
         
@@ -50,17 +50,25 @@ public class ProductsService : BaseService
         
         var products = await _productRepository.PaginatedListAsync(closestToSearchQuery, request);
         
-        return new Page<Product>(products, products.Count, request);
+        var response = Mapper.Map<List<Product>, List<ProductDtoResponse>>(products);
+        
+        return new Page<ProductDtoResponse>(response ?? new List<ProductDtoResponse>(), products.Count, request);
     }
     
-    public async Task<Product?> GetByIdAsync(Guid id)
+    public async Task<ProductDtoResponse?> GetByIdAsync(Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
+        if (product is null)
+        {
+            return null;
+        }
 
-        return product;
+        var response = Mapper.Map<Product, ProductDtoResponse>(product);
+
+        return response;
     }
 
-    public async Task<Product?> UpdateAsync(Product productRequest, Guid id)
+    public async Task<ProductDtoResponse?> UpdateAsync(Product productRequest, Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
         if (product is null)
@@ -78,8 +86,10 @@ public class ProductsService : BaseService
         
         await _productRepository.UpdateAsync(product);
         await UnitOfWork.SaveChangesAsync();
+        
+        var response = Mapper.Map<Product, ProductDtoResponse>(product);
 
-        return product;
+        return response;
     }
 
     public async Task<bool?> DeleteAsync(Guid id)

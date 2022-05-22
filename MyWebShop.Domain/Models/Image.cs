@@ -10,8 +10,8 @@ public class Image : IBaseEntity
     public DateTime? DeleteDate { get; set; }
     public bool IsDeleted { get; set; }
     
-    public string Url { get; set; }
-    public string Alt { get; set; }
+    public string RawBase64 { get; set; }
+    public string Title { get; set; }
     public Guid ProductId { get; set; }
     public Product Product { get; set; }
 }

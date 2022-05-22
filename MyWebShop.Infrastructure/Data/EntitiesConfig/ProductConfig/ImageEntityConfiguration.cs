@@ -12,12 +12,12 @@ public class ImageEntityConfiguration : BaseEntityConfiguration<Image>
         
         builder.ToTable("image");
 
-        builder.Property(image => image.Url)
+        builder.Property(image => image.RawBase64)
             .HasColumnName("url")
-            .HasMaxLength(2000)
+            .HasColumnType("text")
             .IsRequired();
 
-        builder.Property(image => image.Alt)
+        builder.Property(image => image.Title)
             .HasColumnName("alt")
             .HasMaxLength(300)
             .IsRequired();
