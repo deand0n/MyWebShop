@@ -7,33 +7,33 @@ using MyWebShop.Services;
 namespace MyWebShop.Controllers;
 
 [Route("api/[controller]")]
-public class ProductsController : BaseApiController
+public class ProductController : BaseApiController
 {
-    private readonly ProductsService _productsService;
+    private readonly ProductService _productService;
 
-    public ProductsController(ProductsService productsService)
+    public ProductController(ProductService productService)
     {
-        _productsService = productsService;
+        _productService = productService;
     }
     
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] ProductDtoRequest request)
     {
-        var product = await _productsService.AddAsync(request);
+        var product = await _productService.AddAsync(request);
         return Ok(product);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetPaginatedList([FromQuery] Pageable request)
     {
-        var products = await _productsService.GetPaginatedListAsync(request);
+        var products = await _productService.GetPaginatedListAsync(request);
         return Ok(products);
     }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var product = await _productsService.GetByIdAsync(id);
+        var product = await _productService.GetByIdAsync(id);
 
         if (product is null)
         {
@@ -46,7 +46,7 @@ public class ProductsController : BaseApiController
     [HttpPut("{id}")]
     public async Task<IActionResult> Update([FromBody] Product request, [FromRoute] Guid id)
     {
-        var product = await _productsService.UpdateAsync(request, id);
+        var product = await _productService.UpdateAsync(request, id);
         
         if (product is null)
         {
@@ -59,7 +59,7 @@ public class ProductsController : BaseApiController
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var response = await _productsService.DeleteAsync(id);
+        var response = await _productService.DeleteAsync(id);
 
         if (response is null)
         {

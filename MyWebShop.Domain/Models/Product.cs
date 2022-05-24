@@ -14,6 +14,8 @@ public class Product : IBaseEntity
     public string Description { get; set; }
     public decimal Price { get; set; }
     public int Quantity { get; set; }
+    public Guid UserId { get; set; }
+    public User User { get; set; }
     public List<Image> Images { get; set; }
     public List<Comment> Comments { get; set; }
 }

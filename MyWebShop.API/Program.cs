@@ -21,7 +21,10 @@ mapperConfiguration.AssertConfigurationIsValid();
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ProductsService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<CommentService>();
 
 builder.Services.AddDbContext<EfContext>();
 

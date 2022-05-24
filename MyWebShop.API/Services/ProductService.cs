@@ -4,22 +4,17 @@ using MyWebShop.Domain.Base.Pagination;
 using MyWebShop.Domain.Interfaces;
 using MyWebShop.Domain.Models;
 using MyWebShop.DTOs.Request;
-using MyWebShop.DTOs.Response;
 
 namespace MyWebShop.Services;
 
-public class ProductsService : BaseService
+public class ProductService : BaseService
 {
-    private readonly IProductRepository _productRepository;
-
-    public ProductsService(
+    public ProductService(
         IUnitOfWork unitOfWork,
         IMapper mapper) : base(unitOfWork, mapper)
-    {
-        _productRepository = unitOfWork.ProductRepository;
-    }
+    { }
     
-    public async Task<ProductDtoResponse> AddAsync(ProductDtoRequest request)
+    public async Task<Product> AddAsync(ProductDtoRequest request)
     {
         var images = Mapper.Map<List<ImageDtoRequest>, List<Image>>(request.Images);
 
@@ -30,17 +25,16 @@ public class ProductsService : BaseService
             Price = request.Price,
             Quantity = request.Quantity,
             Images = images ?? new List<Image>(),
+            UserId = request.UserId,
         };
         
-        await _productRepository.AddAsync(product);
+        var response = await UnitOfWork.ProductRepository.AddAsync(product);
         await UnitOfWork.SaveChangesAsync();
-
-        var response = Mapper.Map<Product, ProductDtoResponse>(product);
 
         return response;
     }
 
-    public async Task<Page<ProductDtoResponse>> GetPaginatedListAsync(Pageable request)
+    public async Task<Page<Product>> GetPaginatedListAsync(Pageable request)
     {
         var searchQuery = request.SearchQuery.Trim().ToLower();
         
@@ -48,35 +42,30 @@ public class ProductsService : BaseService
             product.Name.Contains(searchQuery) || 
             product.Description.Contains(searchQuery);
         
-        var products = await _productRepository.PaginatedListAsync(closestToSearchQuery, request);
-        
-        var response = Mapper.Map<List<Product>, List<ProductDtoResponse>>(products);
-        
-        return new Page<ProductDtoResponse>(response ?? new List<ProductDtoResponse>(), products.Count, request);
+        var products = await UnitOfWork.ProductRepository.PaginatedListAsync(closestToSearchQuery, request);
+
+        return new Page<Product>(products, products.Count, request);
     }
     
-    public async Task<ProductDtoResponse?> GetByIdAsync(Guid id)
+    public async Task<Product?> GetByIdAsync(Guid id)
     {
-        var product = await _productRepository.GetByIdAsync(id);
+        var product = await UnitOfWork.ProductRepository.GetByIdAsync(id);
         if (product is null)
         {
             return null;
         }
 
-        var response = Mapper.Map<Product, ProductDtoResponse>(product);
-
-        return response;
+        return product;
     }
 
-    public async Task<ProductDtoResponse?> UpdateAsync(Product productRequest, Guid id)
+    public async Task<Product?> UpdateAsync(Product productRequest, Guid id)
     {
-        var product = await _productRepository.GetByIdAsync(id);
+        var product = await UnitOfWork.ProductRepository.GetByIdAsync(id);
         if (product is null)
         {
             return null;
         }
 
-        product.Name = productRequest.Name;
         product.Name = productRequest.Name;
         product.Description = productRequest.Description;
         product.Price = productRequest.Price;
@@ -84,23 +73,21 @@ public class ProductsService : BaseService
         product.Images = productRequest.Images;
         product.Comments = productRequest.Comments;
         
-        await _productRepository.UpdateAsync(product);
+        var response = await UnitOfWork.ProductRepository.UpdateAsync(product);
         await UnitOfWork.SaveChangesAsync();
-        
-        var response = Mapper.Map<Product, ProductDtoResponse>(product);
 
         return response;
     }
 
     public async Task<bool?> DeleteAsync(Guid id)
     {
-        var product = await _productRepository.GetByIdAsync(id);
+        var product = await UnitOfWork.ProductRepository.GetByIdAsync(id);
         if (product is null)
         {
             return null;
         }
         
-        bool response = await _productRepository.DeleteAsync(product);
+        var response = await UnitOfWork.ProductRepository.DeleteAsync(product);
         await UnitOfWork.SaveChangesAsync();
 
         return response;

@@ -14,6 +14,8 @@ public class User : IBaseEntity
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-    public IEnumerable<Comment> Comments { get; set; }
-    public IEnumerable<Order> Orders { get; set; }
+    public bool IsAdmin { get; set; }
+    public List<Comment> Comments { get; set; }
+    public List<Order> Orders { get; set; }
+    public List<Product> Products { get; set; }
 }

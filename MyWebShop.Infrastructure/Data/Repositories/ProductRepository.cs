@@ -16,7 +16,6 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
         var skipPages = pageable.CurrentPage * pageable.PageSize;
         
-        // return DbSet.Where(expression).Skip(skipPages).ToListAsync();
         return DbSet.Where(expression).Skip(skipPages).Take(pageable.PageSize).ToListAsync();
     }
 }

@@ -1,5 +1,4 @@
 using MyWebShop.Domain.Interfaces;
-using MyWebShop.Domain.Models;
 using MyWebShop.Infrastructure.Data.Repositories;
 
 namespace MyWebShop.Infrastructure.Data;
@@ -14,8 +13,9 @@ public class UnitOfWork : IUnitOfWork
     }
     
     public IProductRepository ProductRepository => new ProductRepository(_context);
-    public Repository<User> UserRepository => new UserRepository(_context);
-    public Repository<Order> OrderRepository => new OrderRepository(_context);
+    public IUserRepository UserRepository => new UserRepository(_context);
+    public IOrderRepository OrderRepository => new OrderRepository(_context);
+    public ICommentRepository CommentRepository => new CommentRepository(_context);
 
     public async Task<bool> SaveChangesAsync()
     {

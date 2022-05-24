@@ -39,5 +39,9 @@ public class UserEntityConfiguration : BaseEntityConfiguration<User>
         builder.HasMany(user => user.Orders)
             .WithOne(order => order.User)
             .HasForeignKey(order => order.UserId);
+        
+        builder.HasMany(user => user.Products)
+            .WithOne(product => product.User)
+            .HasForeignKey(product => product.UserId);
     }
 }

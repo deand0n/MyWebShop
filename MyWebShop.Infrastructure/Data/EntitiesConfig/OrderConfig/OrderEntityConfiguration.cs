@@ -20,9 +20,9 @@ public class OrderEntityConfiguration : BaseEntityConfiguration<Order>
             .HasColumnName("total_price")
             .IsRequired();
         
-        builder.Property(order => order.Status)
-            .HasColumnName("status")
-            .IsRequired();
+        // builder.Property(order => order.Status)
+        //     .HasColumnName("status")
+        //     .IsRequired();
 
         builder.HasMany(order => order.OrderItems)
             .WithOne(orderItem => orderItem.Order)

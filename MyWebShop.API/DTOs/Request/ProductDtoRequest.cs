@@ -7,4 +7,5 @@ public class ProductDtoRequest
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public List<ImageDtoRequest> Images { get; set; }
+    public Guid UserId { get; set; }
 }
